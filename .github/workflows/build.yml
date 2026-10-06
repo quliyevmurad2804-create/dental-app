@@ -45,11 +45,16 @@ jobs:
 
     - name: Install Buildozer and Cython
       run: |
-        pip install --upgrade pip
-        pip install cython==0.29.36 buildozer
+        # Устанавливаем стабильную версию pip и virtualenv для чистой среды
+        python -m pip install "pip<24.1"
+        pip install cython==0.29.36 buildozer virtualenv
 
     - name: Build with Buildozer
+      env:
+        # Жестко запрещаем внутренним скриптам обновлять pip до проблемной версии
+        PIP_CONSTRAINT: ${{ github.workspace }}/constraints.txt
       run: |
+        echo "pip<24.1" > constraints.txt
         set +o pipefail
         yes | buildozer -v android debug
 
